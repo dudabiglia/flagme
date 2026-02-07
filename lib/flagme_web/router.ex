@@ -8,9 +8,8 @@ defmodule FlagmeWeb.Router do
   scope "/api", FlagmeWeb do
     pipe_through :api
 
-    post "/test", TestController, :run
-
     post "/v1/flags", FlagController, :create
+    get "/v1/flags/:name", FlagController, :get
     patch "/v1/flags/:id", FlagController, :update
   end
 end

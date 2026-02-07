@@ -14,7 +14,8 @@ defmodule Flagme.Application do
       # {Phoenix.PubSub, name: Flagme.PubSub},
       # Start a worker by calling: Flagme.Worker.start_link(arg)
       # {Flagme.Worker, arg},
-      # Start to serve requests, typically the last entry
+      # Start to serve requests, typically the last entry,
+      Flagme.Cache,
       FlagmeWeb.Endpoint
     ]
 
