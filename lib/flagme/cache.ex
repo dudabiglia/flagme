@@ -3,6 +3,8 @@ defmodule Flagme.Cache do
 
   require Logger
 
+  @default_ttl 1000 * 30
+
   # client-facing
 
   def start_link(state \\ %{}) do
@@ -10,7 +12,7 @@ defmodule Flagme.Cache do
     GenServer.start_link(__MODULE__, state, name: :flagme_cache)
   end
 
-  def add(flag), do: GenServer.cast(:flagme_cache, {:add, flag})
+  def add(flag, ttl \\ @default_ttl), do: GenServer.cast(:flagme_cache, {:add, {flag, ttl}})
   def drop(flag), do: GenServer.cast(:flagme_cache, {:drop, flag})
 
   def get(name), do: GenServer.call(:flagme_cache, {:get, name})
@@ -26,10 +28,12 @@ defmodule Flagme.Cache do
   end
 
   @impl true
-  def handle_cast({:add, flag}, state) do
+  def handle_cast({:add, {flag, ttl}}, state) do
     Logger.info("Adding to cache #{flag.name}")
 
     :ets.insert(:flags, {flag.name, flag})
+
+    Process.send_after(self(), {:clear_flag, flag.name}, ttl)
 
     {:noreply, state}
   end
@@ -59,5 +63,14 @@ defmodule Flagme.Cache do
     result = :ets.tab2list(:flags)
 
     {:reply, result, state}
+  end
+
+  @impl true
+  def handle_info({:clear_flag, name}, state) do
+    Logger.info("Clearing flag")
+
+    :ets.delete(:flags, name)
+
+    {:noreply, state}
   end
 end
