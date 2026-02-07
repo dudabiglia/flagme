@@ -10,6 +10,4 @@ defmodule FlagmeWeb.Endpoint do
     json_decoder: Phoenix.json_library()
 
   plug FlagmeWeb.Router
-
-  plug FlagmeWeb.Plugs.Greeter
 end

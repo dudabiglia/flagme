@@ -1,18 +1,20 @@
 # Flagme
 
-To start your Phoenix server:
+A Phoenix/Elixir API service for managing feature flags with caching.
 
-  * Run `mix setup` to install and setup dependencies
-  * Start Phoenix endpoint with `mix phx.server` or inside IEx with `iex -S mix phx.server`
+Flagme provides a REST API to create, retrieve, and update feature flags. Each flag supports both on/off status and percentage-based enablement for gradual rollouts. Flags are persisted in PostgreSQL and cached in-memory using a GenServer backed by ETS with configurable TTL.
 
-Now you can visit [`localhost:4000`](http://localhost:4000) from your browser.
+## API Endpoints
 
-Ready to run in production? Please [check our deployment guides](https://hexdocs.pm/phoenix/deployment.html).
+- `POST /api/v1/flags` — Create a new flag
+- `GET /api/v1/flags/:name` — Retrieve a flag by name (cache-first)
+- `PATCH /api/v1/flags/:id` — Update flag status/percentage
 
-## Learn more
+## Flag Fields
 
-  * Official website: https://www.phoenixframework.org/
-  * Guides: https://hexdocs.pm/phoenix/overview.html
-  * Docs: https://hexdocs.pm/phoenix
-  * Forum: https://elixirforum.com/c/phoenix-forum
-  * Source: https://github.com/phoenixframework/phoenix
+| Field          | Description                        |
+|----------------|------------------------------------|
+| `name`         | Unique identifier for the flag     |
+| `enabled`      | Boolean on/off status              |
+| `enabled_perc` | Rollout percentage (0–100)         |
+| `inserted_by`  | Metadata about who created it      |
