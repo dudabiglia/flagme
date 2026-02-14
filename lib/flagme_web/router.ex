@@ -12,23 +12,16 @@ defmodule FlagmeWeb.Router do
   scope "/api/v1", FlagmeWeb do
     pipe_through :api
 
-    scope "/flags" do
-      post "/", FlagController, :create
-      get "/:name", FlagController, :get
-      patch "/:id", FlagController, :update
-    end
-
-    scope "/users" do
-      post "/", UserController, :signup
-    end
-
-    scope "/session" do
-      post "/new", SessionController, :new
-    end
+    post "/users", UserController, :signup
+    post "/session/new", SessionController, :new
   end
 
   scope "/api/v1", FlagmeWeb do
     pipe_through [:api, :auth]
+
+    post "/flags", FlagController, :create
+    get "/flags/:name", FlagController, :get
+    patch "/flags/:id", FlagController, :update
 
     post "/session/refresh", SessionController, :refresh
     post "/session/delete", SessionController, :delete
