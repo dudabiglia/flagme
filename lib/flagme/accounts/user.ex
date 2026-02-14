@@ -11,6 +11,7 @@ defmodule Flagme.Accounts.User do
     field :first_name, :string
     field :last_name, :string
     field :email, :string
+    field :permissions, :map, default: %{}
 
     timestamps(type: :utc_datetime)
   end
@@ -18,15 +19,15 @@ defmodule Flagme.Accounts.User do
   @doc false
   def changeset(user \\ %__MODULE__{}, attrs) do
     user
-    |> cast(attrs, [:first_name, :last_name, :email, :password])
-    |> validate_required([:first_name, :last_name, :email, :password])
+    |> cast(attrs, [:first_name, :last_name, :email, :password, :permissions])
+    |> validate_required([:first_name, :last_name, :email, :password, :permissions])
     |> unique_constraint(:email)
   end
 
   def signup_changeset(user \\ %__MODULE__{}, attrs) do
     user
-    |> cast(attrs, [:first_name, :last_name, :email, :password])
-    |> validate_required([:first_name, :last_name, :email, :password])
+    |> cast(attrs, [:first_name, :last_name, :email, :password, :permissions])
+    |> validate_required([:first_name, :last_name, :email, :password, :permissions])
     |> encrypt_and_put_password()
     |> unique_constraint(:email)
   end

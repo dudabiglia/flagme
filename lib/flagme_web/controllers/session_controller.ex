@@ -21,11 +21,21 @@ defmodule FlagmeWeb.SessionController do
   def new(conn, %{"email" => email, "password" => password}) do
     case Accounts.auth_user(email, password) do
       {:ok, user} ->
+        perms = Guardian.build_permissions(user.permissions)
+
         {:ok, access_token, _claims} =
-          Guardian.encode_and_sign(user, %{}, token_type: "access", ttl: {15, :minute})
+          Guardian.encode_and_sign(user, %{},
+            token_type: "access",
+            ttl: {15, :minute},
+            permissions: perms
+          )
 
         {:ok, refresh_token, _claims} =
-          Guardian.encode_and_sign(user, %{}, token_type: "refresh", ttl: {7, :day})
+          Guardian.encode_and_sign(user, %{},
+            token_type: "refresh",
+            ttl: {7, :day},
+            permissions: perms
+          )
 
         conn
         |> put_resp_cookie("ruid", refresh_token)

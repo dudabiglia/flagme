@@ -32,7 +32,14 @@ config :phoenix, :json_library, Jason
 
 config :flagme, Flagme.Repo, migration_primary_key: [name: :id, type: :binary_id]
 
-config :flagme, Flagme.Guardian, issuer: "flagme", secret_key: "mysecretkey"
+config :flagme, Flagme.Guardian,
+  issuer: "flagme",
+  secret_key: "mysecretkey",
+  permissions: %{
+    read_only: [:read_flags],
+    default: [:read_flags, :create_flags, :update_flags],
+    admin: [:delete_flags, :manage_users]
+  }
 
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.

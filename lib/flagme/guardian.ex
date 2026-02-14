@@ -1,13 +1,14 @@
 defmodule Flagme.Guardian do
   use Guardian, otp_app: :flagme
 
+  use Guardian.Permissions, encoding: Guardian.Permissions.BitwiseEncoding
+
   alias Flagme.Accounts
 
   # gets the id of the user from the resource and
   # returns it to be added as the sub of the JTW
   def subject_for_token(resource, _claims) do
     sub = to_string(resource.id)
-
     {:ok, sub}
   end
 
@@ -19,4 +20,17 @@ defmodule Flagme.Guardian do
     resource = Accounts.get!(id)
     {:ok, resource}
   end
+
+  def build_claims(claims, _resource, opts) do
+    claims = encode_permissions_into_claims!(claims, Keyword.get(opts, :permissions))
+    {:ok, claims}
+  end
+
+  def build_permissions(permissions) when is_map(permissions) do
+    Map.new(permissions, fn {group, perms} ->
+      {String.to_atom(group), Enum.map(perms, &String.to_atom/1)}
+    end)
+  end
+
+  def build_permissions(_), do: %{}
 end
