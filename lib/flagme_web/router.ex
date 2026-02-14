@@ -5,11 +5,32 @@ defmodule FlagmeWeb.Router do
     plug :accepts, ["json"]
   end
 
-  scope "/api", FlagmeWeb do
+  pipeline :auth do
+    plug Flagme.Auth.Pipeline
+  end
+
+  scope "/api/v1", FlagmeWeb do
     pipe_through :api
 
-    post "/v1/flags", FlagController, :create
-    get "/v1/flags/:name", FlagController, :get
-    patch "/v1/flags/:id", FlagController, :update
+    scope "/flags" do
+      post "/", FlagController, :create
+      get "/:name", FlagController, :get
+      patch "/:id", FlagController, :update
+    end
+
+    scope "/users" do
+      post "/", UserController, :signup
+    end
+
+    scope "/session" do
+      post "/new", SessionController, :new
+    end
+  end
+
+  scope "/api/v1", FlagmeWeb do
+    pipe_through [:api, :auth]
+
+    post "/session/refresh", SessionController, :refresh
+    post "/session/delete", SessionController, :delete
   end
 end
