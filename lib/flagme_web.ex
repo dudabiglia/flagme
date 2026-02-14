@@ -25,6 +25,7 @@ defmodule FlagmeWeb do
         layouts: [html: FlagmeWeb.Layouts]
 
       import Plug.Conn
+      import Flagme.Guardian, only: [verify_permissions: 2]
 
       unquote(verified_routes())
     end
