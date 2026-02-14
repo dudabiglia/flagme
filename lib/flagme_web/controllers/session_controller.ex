@@ -18,7 +18,7 @@ defmodule FlagmeWeb.SessionController do
 
   action_fallback FlagmeWeb.FallbackController
 
-  def new(conn, %{"email" => email, "password" => password}) do
+  def signin(conn, %{"email" => email, "password" => password}) do
     case Accounts.auth_user(email, password) do
       {:ok, user} ->
         perms = Guardian.build_permissions(user.permissions)
@@ -49,7 +49,7 @@ defmodule FlagmeWeb.SessionController do
     end
   end
 
-  def refresh(conn, _params) do
+  def refresh_token(conn, _params) do
     refresh_token = fetch_cookies(conn) |> Map.from_struct() |> get_in([:cookies, "ruid"])
 
     case Guardian.exchange(refresh_token, "refresh", "access") do
@@ -65,7 +65,7 @@ defmodule FlagmeWeb.SessionController do
     end
   end
 
-  def delete(conn, _params) do
+  def signout(conn, _params) do
     conn
     |> delete_resp_cookie("ruid")
     |> put_status(200)

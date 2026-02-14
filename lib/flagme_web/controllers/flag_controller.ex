@@ -4,11 +4,16 @@ defmodule FlagmeWeb.FlagController do
   alias Flagme.Flags
 
   def create(conn, params) do
-    case Flags.create(params) do
-      {:ok, flag} ->
-        render(conn, :show, flag: flag)
+    with :ok <- verify_permissions(conn, [:create_flags]),
+         {:ok, flag} <- Flags.create(params) do
+      render(conn, :show, flag: flag)
+    else
+      {:error, :unauthorized} ->
+        conn
+        |> put_status(401)
+        |> json(%{error: "unauthorized", details: "missing permissions"})
 
-      {:error, changeset} ->
+      {:error, %Ecto.Changeset{} = changeset} ->
         conn
         |> assign(:changeset, changeset)
         |> put_status(422)

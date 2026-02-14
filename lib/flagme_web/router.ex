@@ -13,7 +13,7 @@ defmodule FlagmeWeb.Router do
     pipe_through :api
 
     post "/users", UserController, :signup
-    post "/session/new", SessionController, :new
+    post "/users/sign-in", SessionController, :signin
   end
 
   scope "/api/v1", FlagmeWeb do
@@ -23,7 +23,7 @@ defmodule FlagmeWeb.Router do
     get "/flags/:name", FlagController, :get
     patch "/flags/:id", FlagController, :update
 
-    post "/session/refresh", SessionController, :refresh
-    post "/session/delete", SessionController, :delete
+    post "/users/refresh-token", SessionController, :refresh_token
+    post "/users/sign-out", SessionController, :signout
   end
 end

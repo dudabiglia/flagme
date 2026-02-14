@@ -36,9 +36,11 @@ defmodule Flagme.Guardian do
 
   def verify_permissions(conn, required_permissions) do
     %{default: permissions} =
-      conn |> Guardian.Plug.current_claims() |> Flagme.Guardian.decode_permissions_from_claims()
+      conn
+      |> Guardian.Plug.current_claims()
+      |> Flagme.Guardian.decode_permissions_from_claims()
 
-    if Enum.all?(permissions, &(&1 in required_permissions)) do
+    if Enum.any?(permissions, &(&1 in required_permissions)) do
       :ok
     else
       {:error, :unauthorized}
